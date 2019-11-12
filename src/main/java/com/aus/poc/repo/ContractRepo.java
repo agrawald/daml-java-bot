@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ContractCache implements Function<CreatedContract, CreatedContract>, InitializingBean, DisposableBean {
+public class ContractRepo implements Function<CreatedContract, CreatedContract>, InitializingBean, DisposableBean {
     private final CacheManager cacheManager;
     public Cache<Identifier, CreatedContract> getCache() {
         return this.cacheManager.getCache("contracts", Identifier.class, CreatedContract.class);
