@@ -1,6 +1,0 @@
-com/aus/poc/service/ActiveContractSvc.class
-com/aus/poc/Application.class
-com/aus/poc/controller/AppController.class
-com/aus/poc/service/DamlContractSvc.class
-com/aus/poc/config/CacheConfig.class
-com/aus/poc/repo/ContractCache.class
