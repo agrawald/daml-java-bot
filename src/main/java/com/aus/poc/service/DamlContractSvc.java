@@ -37,17 +37,19 @@ public class DamlContractSvc implements InitializingBean {
 
     private DamlLedgerClient client;
 
-    private final static AtomicReference<LedgerOffset> OFFSET = new AtomicReference<>(
-            LedgerOffset.LedgerBegin.getInstance());
+    private static LedgerOffset ledgerBegin = LedgerOffset.LedgerBegin.getInstance();
+    private static LedgerOffset ledgerEnd;
 
     @Scheduled(fixedDelay = 5000)
     public void fetch() {
         final TransactionFilter transactionFilter = new FiltersByParty(
                 Collections.singletonMap(party, NoFilter.instance));
         final TransactionsClient transactionsClient = client.getTransactionsClient();
-        transactionsClient.getTransactions(OFFSET.get(), transactionFilter, true).flatMapIterable(t -> t.getEvents())
+        ledgerEnd = transactionsClient.getLedgerEnd().blockingGet();
+        log.info("Getting contracts from {} till {}", ledgerBegin, ledgerEnd);
+        transactionsClient.getTransactions(ledgerBegin, ledgerEnd, transactionFilter, true).flatMapIterable(t -> t.getEvents())
                 .forEach(contractRepo);
-        OFFSET.set(transactionsClient.getLedgerEnd().blockingGet());
+        ledgerBegin = ledgerEnd;
     }
 
     @Override

@@ -58,7 +58,7 @@ public class ContractRepo implements io.reactivex.functions.Consumer<Event>, Ini
 
     @Override
     public void accept(Event event) {
-        log.info("{} -> Contract Id: {} Event: {}", event.getClass(), event.getContractId(), event);
+        log.info("{} -> Contract Id: {}", event.getClass().getSimpleName(), event.getContractId(), event);
         if (event instanceof CreatedEvent) {
             this.getCache().putIfAbsent(event.getContractId(), event);
         }
