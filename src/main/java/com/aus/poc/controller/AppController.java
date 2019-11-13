@@ -1,7 +1,7 @@
 package com.aus.poc.controller;
 
-import com.aus.poc.service.ActiveContractSvc;
-import com.daml.ledger.rxjava.components.helpers.CreatedContract;
+import com.aus.poc.repo.ContractRepo;
+import com.daml.ledger.javaapi.data.Event;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,12 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 public class AppController {
-    private final ActiveContractSvc activeContractSvc;
+    private final ContractRepo contractRepo;
 
-    @GetMapping(path = "/{entityName}")
+    @GetMapping(path = "/{contractId}")
     @ResponseBody
-    public CreatedContract get(@PathVariable("entityName") String entityName) {
-        log.info("Fetching contract for {}", entityName);
-        return activeContractSvc.get(entityName);
+    public Event get(@PathVariable("contractId") String contractId) {
+        log.info("Fetching contract for {}", contractId);
+        return contractRepo.get(contractId);
     }
 }
