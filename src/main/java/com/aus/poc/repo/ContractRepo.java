@@ -1,5 +1,8 @@
 package com.aus.poc.repo;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import com.daml.ledger.javaapi.data.ArchivedEvent;
@@ -8,6 +11,7 @@ import com.daml.ledger.javaapi.data.Event;
 
 import org.ehcache.Cache;
 import org.ehcache.CacheManager;
+import org.ehcache.Cache.Entry;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,6 +28,11 @@ public class ContractRepo implements io.reactivex.functions.Consumer<Event>, Ini
 
     public Cache<String, Event> getCache() {
         return this.cacheManager.getCache("contracts", String.class, Event.class);
+    }
+
+    public List<Event> getAll() {
+        return StreamSupport.stream(this.getCache().spliterator(), true).map(entry -> entry.getValue())
+                .collect(Collectors.toList());
     }
 
     @Scheduled(fixedDelay = 5000)

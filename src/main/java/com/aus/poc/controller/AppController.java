@@ -1,5 +1,7 @@
 package com.aus.poc.controller;
 
+import java.util.List;
+
 import com.aus.poc.repo.ContractRepo;
 import com.daml.ledger.javaapi.data.Event;
 
@@ -22,5 +24,11 @@ public class AppController {
     public Event get(@PathVariable("contractId") String contractId) {
         log.info("Fetching contract for {}", contractId);
         return contractRepo.get(contractId);
+    }
+
+    @GetMapping(path = "/")
+    @ResponseBody
+    public List<Event> getAll() {
+        return contractRepo.getAll();
     }
 }

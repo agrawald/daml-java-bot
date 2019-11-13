@@ -10,6 +10,7 @@ import com.daml.ledger.javaapi.data.LedgerOffset;
 import com.daml.ledger.javaapi.data.NoFilter;
 import com.daml.ledger.javaapi.data.TransactionFilter;
 import com.daml.ledger.rxjava.DamlLedgerClient;
+import com.daml.ledger.rxjava.TransactionsClient;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +29,8 @@ public class DamlContractSvc implements InitializingBean {
     private String host;
     @Value("${daml.port}")
     private int port;
-    @Value("${daml.appId}")
-    private String appId;
     @Value("${daml.party}")
     private String party;
-    @Value("${daml.packageId}")
-    private String packageId;
 
     @Autowired(required = true)
     private ContractRepo contractRepo;
@@ -47,10 +44,10 @@ public class DamlContractSvc implements InitializingBean {
     public void fetch() {
         final TransactionFilter transactionFilter = new FiltersByParty(
                 Collections.singletonMap(party, NoFilter.instance));
-        client.getTransactionsClient().getTransactions(OFFSET.get(), transactionFilter, true).flatMapIterable(t -> {
-            OFFSET.set(new LedgerOffset.Absolute(t.getOffset()));
-            return t.getEvents();
-        }).forEach(contractRepo);
+        final TransactionsClient transactionsClient = client.getTransactionsClient();
+        transactionsClient.getTransactions(OFFSET.get(), transactionFilter, true).flatMapIterable(t -> t.getEvents())
+                .forEach(contractRepo);
+        OFFSET.set(transactionsClient.getLedgerEnd().blockingGet());
     }
 
     @Override
